@@ -14,6 +14,22 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+
+@app.after_request
+def add_cors_headers(response):
+    """Allow the dashboard (opened as a local HTML file, a different
+    origin from the API) to call this API from the browser.
+
+    Without these headers the browser blocks every fetch() to this API
+    with a CORS error before our code ever gets a chance to run - even
+    though both are on the same machine.
+    """
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
+
+
 # The JSON "database" file. It lives next to this script.
 COURSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "courses.json")
 
